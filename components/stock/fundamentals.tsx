@@ -3,14 +3,13 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { StockData } from '@/lib/api'
-import { TrendingUp, TrendingDown, DollarSign, Percent } from 'lucide-react'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 
 interface FundamentalsProps {
   data: StockData
-  ticker: string
 }
 
-export function Fundamentals({ data, ticker }: FundamentalsProps) {
+export function Fundamentals({ data }: FundamentalsProps) {
   const formatCurrency = (value: number) => {
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`
     if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`

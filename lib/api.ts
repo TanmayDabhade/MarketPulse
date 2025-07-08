@@ -87,9 +87,9 @@ export async function getStockData(ticker: string): Promise<StockData> {
       volume: quote.regularMarketVolume || 0,
       marketCap: quote.marketCap || 0,
       pe: quote.trailingPE || 0,
-      eps: quote.trailingEps || 0,
-      dividend: quote.dividendRate || 0,
-      dividendYield: quote.dividendYield || 0,
+      eps: quote.epsTrailingTwelveMonths || 0,
+      dividend: quote.trailingAnnualDividendRate || 0,
+      dividendYield: quote.trailingAnnualDividendYield || 0,
     }
   } catch (error) {
     console.error(`Error fetching data for ${upperTicker}:`, error)

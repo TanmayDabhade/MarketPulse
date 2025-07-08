@@ -9,6 +9,35 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Define proper types for the database schema
+interface Fundamentals {
+  price: number
+  change: number
+  changePercent: number
+  marketCap: number
+  pe: number
+  eps: number
+  dividend: number
+  dividendYield: number
+  volume: number
+}
+
+interface Technicals {
+  rsi: number
+  macd: {
+    macd: number
+    signal: number
+    histogram: number
+  }
+  sma: {
+    sma20: number
+    sma50: number
+    sma200: number
+  }
+  support: number
+  resistance: number
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -58,8 +87,8 @@ export type Database = {
           user_id: string
           ticker: string
           sentiment_score: number
-          fundamentals: any
-          technicals: any
+          fundamentals: Fundamentals
+          technicals: Technicals
           sec_summary: string
           ai_summary: string
           created_at: string
@@ -69,8 +98,8 @@ export type Database = {
           user_id: string
           ticker: string
           sentiment_score: number
-          fundamentals: any
-          technicals: any
+          fundamentals: Fundamentals
+          technicals: Technicals
           sec_summary: string
           ai_summary: string
           created_at?: string
@@ -80,8 +109,8 @@ export type Database = {
           user_id?: string
           ticker?: string
           sentiment_score?: number
-          fundamentals?: any
-          technicals?: any
+          fundamentals?: Fundamentals
+          technicals?: Technicals
           sec_summary?: string
           ai_summary?: string
           created_at?: string

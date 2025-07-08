@@ -73,8 +73,8 @@ async function StockReport({ ticker }: { ticker: string }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Technical data={technicalData} ticker={ticker} />
-      <Fundamentals data={stockData} ticker={ticker} />
-      <Sentiment data={sentimentData} ticker={ticker} />
+      <Fundamentals data={stockData} />
+      <Sentiment data={sentimentData} />
       <SEC data={secData} ticker={ticker} />
       <div className="lg:col-span-2">
         <Summary summary={aiSummary} ticker={ticker} />

@@ -10,21 +10,37 @@ import Link from 'next/link'
 const isClerkConfigured = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'your_clerk_publishable_key';
 
+interface ClerkUser {
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+}
+
+interface UseUserResult {
+  isSignedIn: boolean
+  user: ClerkUser | null
+}
+
 export default function HomePage() {
-  let SignInButton: any = null
-  let useUser: any = null
-  let UserButton: any = null
+  let SignInButton: React.ComponentType<{ mode: string; children: React.ReactNode }> | null = null
+  let useUser: (() => UseUserResult) | null = null
   
   if (isClerkConfigured) {
     // Dynamically require Clerk only if configured
     const clerk = require('@clerk/nextjs')
     SignInButton = clerk.SignInButton
     useUser = clerk.useUser
-    UserButton = clerk.UserButton
   }
 
-  // Get user authentication status
-  const { isSignedIn, user } = useUser ? useUser() : { isSignedIn: false, user: null }
+  // Get user authentication status - always call useUser if available
+  const userResult = useUser ? useUser() : { isSignedIn: false, user: null }
+  const { isSignedIn } = userResult
+
+  const renderSignInButton = (children: React.ReactNode) => {
+    if (!SignInButton) return null
+    return <SignInButton mode="modal">{children}</SignInButton>
+  }
 
   return (
     <div className="min-h-screen bg-black">
@@ -54,12 +70,12 @@ export default function HomePage() {
                     </Button>
                   </Link>
                 ) : (
-                  <SignInButton mode="modal">
+                  renderSignInButton(
                     <Button size="lg" className="bg-white hover:bg-white/90 text-black">
                       Get Started Free
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                  </SignInButton>
+                  )
                 )
               ) : (
                 <Link href="/report/AAPL">
@@ -186,11 +202,11 @@ export default function HomePage() {
                       </Button>
                     </Link>
                   ) : (
-                    <SignInButton mode="modal">
+                    renderSignInButton(
                       <Button variant="outline" className="w-full border-white/30 text-white hover:bg-white/10">
                         Get Started
                       </Button>
-                    </SignInButton>
+                    )
                   )
                 ) : (
                   <Link href="/report/AAPL">
@@ -207,46 +223,40 @@ export default function HomePage() {
               <CardHeader className="text-center">
                 <CardTitle className="text-white">Pro</CardTitle>
                 <div className="text-3xl font-bold text-yellow-400">$9</div>
-                <p className="text-white/60">For serious investors</p>
+                <p className="text-white/60">per month</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm text-white/70">Unlimited stock reports</span>
+                    <Zap className="h-4 w-4 text-yellow-400" />
+                    <span className="text-sm text-white/70 font-medium">Unlimited stock reports</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Brain className="h-4 w-4 text-yellow-400" />
+                    <span className="text-sm text-white/70 font-medium">Advanced AI insights</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <BarChart3 className="h-4 w-4 text-yellow-400" />
+                    <span className="text-sm text-white/70 font-medium">SEC filing analysis</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-yellow-400" />
+                    <span className="text-sm text-white/70 font-medium">Priority support</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm text-white/70">Advanced AI insights</span>
+                    <span className="text-sm text-white/70">Export reports to PDF</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm text-white/70">SEC filing analysis</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm text-white/70">Priority support</span>
+                    <span className="text-sm text-white/70">Watchlist management</span>
                   </div>
                 </div>
-                {isClerkConfigured ? (
-                  isSignedIn ? (
-                    <Link href="/upgrade">
-                      <Button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black">
-                        Upgrade to Pro
-                      </Button>
-                    </Link>
-                  ) : (
-                    <SignInButton mode="modal">
-                      <Button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black">
-                        Sign In to Upgrade
-                      </Button>
-                    </SignInButton>
-                  )
-                ) : (
-                  <Button className="w-full bg-white/20 hover:bg-white/30 text-white" disabled>
-                    Setup Auth First
+                <Link href="/upgrade">
+                  <Button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black">
+                    Upgrade to Pro
                   </Button>
-                )}
+                </Link>
               </CardContent>
             </Card>
           </div>
@@ -257,54 +267,37 @@ export default function HomePage() {
       <section className="py-24 bg-white/5">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Make Smarter Investment Decisions?
+            Ready to Start Analyzing?
           </h2>
           <p className="text-white/60 mb-8">
-            Join thousands of investors who trust MarketPulse for their stock analysis needs.
+            Join thousands of investors making smarter decisions with AI-powered insights.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {isClerkConfigured ? (
-              isSignedIn ? (
-                <Link href="/dashboard">
-                  <Button size="lg" className="bg-white hover:bg-white/90 text-black">
-                    Go to Dashboard
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              ) : (
-                <SignInButton mode="modal">
-                  <Button size="lg" className="bg-white hover:bg-white/90 text-black">
-                    Start Your Free Trial
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </SignInButton>
-              )
-            ) : (
-              <Link href="/report/AAPL">
+          {isClerkConfigured ? (
+            isSignedIn ? (
+              <Link href="/dashboard">
                 <Button size="lg" className="bg-white hover:bg-white/90 text-black">
-                  Try Demo Report
+                  Go to Dashboard
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-            )}
-          </div>
+            ) : (
+              renderSignInButton(
+                <Button size="lg" className="bg-white hover:bg-white/90 text-black">
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              )
+            )
+          ) : (
+            <Link href="/report/AAPL">
+              <Button size="lg" className="bg-white hover:bg-white/90 text-black">
+                Try Demo Report
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          )}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-12 border-t border-white/20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <TrendingUp className="h-6 w-6 text-white" />
-              <span className="text-xl font-bold text-white">MarketPulse</span>
-            </div>
-            <p className="text-white/60 text-sm">
-              © 2024 MarketPulse. AI-powered stock analysis for smarter investing.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

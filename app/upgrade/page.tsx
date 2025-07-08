@@ -46,7 +46,7 @@ export default function UpgradePage() {
             Upgrade to MarketPulse Pro
           </h1>
           <p className="text-xl text-white/60">
-            You've reached your daily limit. Upgrade to unlock unlimited stock reports and advanced features.
+            You&apos;ve reached your daily limit. Upgrade to unlock unlimited stock reports and advanced features.
           </p>
         </div>
 

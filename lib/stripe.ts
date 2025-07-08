@@ -9,7 +9,21 @@ export const stripe = new Stripe(stripeSecretKey, {
 export const getStripe = () => {
   if (typeof window !== 'undefined') {
     const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder'
-    return new (window as any).Stripe(publishableKey)
+    // Use type assertion to unknown first, then to the correct type
+    return new ((window as unknown) as { Stripe: StripeConstructor }).Stripe(publishableKey)
   }
   return null
+}
+
+// Define the StripeConstructor type
+interface StripeConstructor {
+  (publishableKey: string, options?: StripeConstructorOptions): Stripe
+  new (publishableKey: string, options?: StripeConstructorOptions): Stripe
+}
+
+interface StripeConstructorOptions {
+  apiVersion?: string
+  betas?: string[]
+  locale?: string
+  stripeAccount?: string
 } 

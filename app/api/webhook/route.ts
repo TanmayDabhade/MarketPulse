@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabase } from '@/lib/supabase'
 import { headers } from 'next/headers'
+import Stripe from 'stripe'
+
+interface CheckoutSessionCompletedEvent {
+  id: string
+  customer: string
+  metadata?: {
+    userId?: string
+  }
+}
+
+interface SubscriptionEvent {
+  id: string
+  customer: string
+  status: string
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
@@ -12,7 +27,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No signature' }, { status: 400 })
   }
 
-  let event
+  let event: Stripe.Event
 
   try {
     event = stripe.webhooks.constructEvent(
@@ -28,7 +43,7 @@ export async function POST(request: NextRequest) {
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as any
+        const session = event.data.object as CheckoutSessionCompletedEvent
         const userId = session.metadata?.userId
 
         if (userId) {
@@ -45,7 +60,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as any
+        const subscription = event.data.object as SubscriptionEvent
         const customerId = subscription.customer
 
         // Update subscription status
@@ -57,7 +72,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'customer.subscription.deleted': {
-        const subscription = event.data.object as any
+        const subscription = event.data.object as SubscriptionEvent
         const customerId = subscription.customer
 
         // Update subscription status to canceled
