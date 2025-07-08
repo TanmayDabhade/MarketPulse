@@ -200,11 +200,3 @@ market-pulse/
 3. Make your changes
 4. Submit a pull request
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support, email support@marketpulse.com or create an issue in the repository.
-# MarketPulse
