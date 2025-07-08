@@ -33,7 +33,9 @@ export function Technical({ data, ticker }: TechnicalProps) {
   return (
     <Card className="bg-white/10 border-white/20">
       <CardHeader>
-        <CardTitle className="text-white">Technical Analysis</CardTitle>
+        <CardTitle className="text-white">
+          Technical Analysis {ticker && <span className="text-white/50 text-xs ml-2">({ticker})</span>}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* RSI */}
@@ -123,4 +125,4 @@ export function Technical({ data, ticker }: TechnicalProps) {
       </CardContent>
     </Card>
   )
-} 
+}
